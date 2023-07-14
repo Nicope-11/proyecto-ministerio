@@ -1,13 +1,8 @@
-import {
-  DataGrid,
-  GridToolbarContainer,
-  GridToolbarExport,
-} from '@mui/x-data-grid';
-import { mockDataComputer } from './DataComputer';
+import { DataGrid } from '@mui/x-data-grid';
 import { Box, useTheme } from '@mui/material';
 import { tokens } from '../../../theme';
 
-const ComputerTable = ({ data }) => {
+const ComputerTable = ({ data, apiRef }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const columns = [
@@ -104,6 +99,7 @@ const ComputerTable = ({ data }) => {
   return (
     <Box
       height="100%"
+      width="100%"
       sx={{
         '& .MuiDataGrid-root': {
           border: 'none',
@@ -138,22 +134,25 @@ const ComputerTable = ({ data }) => {
       }}
     >
       <DataGrid
+        apiRef={apiRef}
         columns={columns}
         rows={data}
         density="compact"
         rowSelection={false}
-        //components={{ Toolbar: CustomGridToolbar }}
+        sx={{
+          '@media print': {
+            '.MuiDataGrid-main': {
+              width: 'fit-content',
+              fontSize: '12px',
+              height: 'fit-content',
+              overflow: 'visible',
+              color: '#000',
+            },
+            //marginBottom: 400,
+          },
+        }}
       />
     </Box>
   );
 };
 export default ComputerTable;
-
-const CustomGridToolbar = () => {
-  //const classes = useStyles();
-  return (
-    <GridToolbarContainer sx={{ justifyContent: 'end' }}>
-      <GridToolbarExport />
-    </GridToolbarContainer>
-  );
-};

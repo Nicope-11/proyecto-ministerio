@@ -5,37 +5,44 @@ import {
   useTheme,
   InputBase,
   IconButton,
+  debounce,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
 import { tokens } from '../../../theme';
 import ComputerTable from './ComputerTable';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { mockDataComputer } from './DataComputer';
 import CustomDialog, {
   dialogOpenSubject$,
 } from '../../../components/CustomDialog';
+import { useGridApiRef } from '@mui/x-data-grid';
 
 const ComputerPage = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  // Barra de busqueda
+  // API GRID
 
+  const apiRef = useGridApiRef();
   const [searchText, setSearchText] = useState('');
-  const [tableData, setTableData] = useState(mockDataComputer);
 
-  const handleSearch = (event) => {
-    const searchValue = event.target.value;
-    setSearchText(searchValue);
+  const updateSearchValue = useMemo(() => {
+    return debounce((newValue) => {
+      apiRef.current.setQuickFilterValues(
+        newValue.split(' ').filter((word) => word !== '')
+      );
+    }, 250);
+  }, [apiRef]);
 
-    const searchRegex = new RegExp(`.*${searchValue}.*`, 'ig');
-    const filteredRows = mockDataComputer.filter((o) => {
-      return Object.values(o).some((value) => {
-        return searchRegex.test(value.toString());
-      });
-    });
-    setTableData(filteredRows);
+  function handleSearchValueChange(event) {
+    const newValue = event.target.value;
+    setSearchText(newValue);
+    updateSearchValue(newValue);
+  }
+
+  const handleExport = () => {
+    apiRef.current.exportDataAsPrint({ hideFooter: true, hideToolbar: true });
   };
 
   // Modal
@@ -49,7 +56,6 @@ const ComputerPage = () => {
       <CustomDialog onClose="dialog1">
         <h2>hola</h2>
       </CustomDialog>
-
       <Box
         bgcolor={colors.primary[700]}
         margin={1}
@@ -96,13 +102,13 @@ const ComputerPage = () => {
                 sx={{ ml: 2, flex: 1, color: '#fff' }}
                 placeholder="Buscar"
                 value={searchText}
-                onChange={handleSearch}
+                onChange={handleSearchValueChange}
               />
               <IconButton type="button" sx={{ p: 1, color: '#fff' }}>
                 <SearchIcon />
               </IconButton>
             </Box>
-            <Button variant="contained" color="success">
+            <Button variant="contained" color="success" onClick={handleExport}>
               Exportar
             </Button>
           </Box>
@@ -116,7 +122,7 @@ const ComputerPage = () => {
           height="62vh"
           flex={15}
         >
-          <ComputerTable data={tableData} />
+          <ComputerTable data={mockDataComputer} apiRef={apiRef} />
         </Box>
       </Box>
     </>

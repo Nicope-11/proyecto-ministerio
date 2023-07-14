@@ -79,4 +79,12 @@ export const mockDataComputer = [
     discohd: '1TB',
     estado: 'Activo',
   },
+  {
+    id: 11,
+    lugar: 'HPG - Ministerio',
+    cpucomputadora: 'Intel i3',
+    ram: 8,
+    discohd: '500GB',
+    estado: 'Activo',
+  },
 ];
