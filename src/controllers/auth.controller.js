@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { TOKEN_SECRET } from '../config.js';
 
 export const register = async (req, res) => {
-  const { email, password, username } = req.body;
+  const { email, password, username } = req.validData;
 
   try {
     const userFound = await User.findOne({ email });
@@ -33,7 +33,7 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.validData;
 
   try {
     const userFound = await User.findOne({ email });

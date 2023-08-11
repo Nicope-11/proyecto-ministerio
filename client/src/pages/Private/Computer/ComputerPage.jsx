@@ -60,7 +60,7 @@ const ComputerPage = () => {
         bgcolor={colors.primary[700]}
         margin={1}
         marginTop={5}
-        borderRadius={7}
+        borderRadius={3}
         padding="5px"
         height="76vh"
         display="flex"
@@ -96,7 +96,7 @@ const ComputerPage = () => {
               height="35px"
               color="#fff"
               border="solid 1px #fff"
-              borderRadius={2}
+              borderRadius={1}
             >
               <InputBase
                 sx={{ ml: 2, flex: 1, color: '#fff' }}
@@ -115,7 +115,7 @@ const ComputerPage = () => {
         </Box>
         <Box
           bgcolor={colors.bgTable}
-          borderRadius={7}
+          borderRadius={3}
           padding={1.5}
           paddingTop={2}
           paddingBottom={0}

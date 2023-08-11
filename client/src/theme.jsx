@@ -1,5 +1,5 @@
 import { createContext, useState, useMemo, useEffect } from 'react';
-import { createTheme } from '@mui/material/styles';
+import { alpha, createTheme } from '@mui/material/styles';
 import { esES } from '@mui/x-data-grid';
 
 /* blue: {
@@ -34,10 +34,10 @@ export const tokens = (mode) => ({
           100: '#cfd3d7',
           200: '#a0a7af',
           300: '#707a88',
-          400: '#414e60',
+          400: '#f2f0f0', //'#414e60'
           500: '#112238',
           600: '#0e1b2d',
-          700: '#0a1422',
+          700: '#040D19',
           800: '#070e16',
           900: '#03070b',
         },
@@ -46,8 +46,8 @@ export const tokens = (mode) => ({
           200: '#b7ebde',
           300: '#94e2cd',
           400: '#70d8bd',
-          500: '#4cceac',
-          600: '#3da58a',
+          500: '#B3EB7A',
+          600: '#6d9644',
           700: '#2e7c67',
           800: '#1e5245',
           900: '#0f2922',
@@ -104,8 +104,8 @@ export const tokens = (mode) => ({
           200: '#1e5245',
           300: '#2e7c67',
           400: '#3da58a',
-          500: '#4cceac',
-          600: '#70d8bd',
+          500: '#B3EB7A',
+          600: '#6d9644',
           700: '#94e2cd',
           800: '#b7ebde',
           900: '#dbf5ee',
@@ -143,14 +143,20 @@ export const themeSettings = (mode) => {
   // Función para calcular la luminancia relativa
 
   return {
+    shape: {
+      borderRadius: 10,
+      //transition: 'all 0.2s ease',
+    },
     palette: {
       mode: mode,
       ...(mode === 'dark'
         ? {
             // palette values for dark mode
+
             primary: {
-              main: colors.primary[300],
-              secondary: colors.primary[700],
+              //main: colors.primary[100],
+              main: '#6ba0d4',
+              //secondary: colors.primary[700],
             },
             secondary: {
               main: colors.greenAccent[600],
@@ -159,7 +165,7 @@ export const themeSettings = (mode) => {
               main: '#B3EB7A',
             },
             neutral: {
-              dark: colors.grey[700],
+              dark: colors.grey[500],
               main: colors.grey[400],
               light: colors.grey[100],
             },
@@ -191,7 +197,9 @@ export const themeSettings = (mode) => {
             },
             background: {
               default: '#D9D9D9',
+              //paper: '#fff',
             },
+
             /* action: {
               active: '#000000', // Color blanco para los iconos
             }, */
@@ -228,10 +236,30 @@ export const themeSettings = (mode) => {
       h6: {
         fontFamily: ['Poppins', 'sans-serif'].join(','),
         fontSize: 14,
-        color: '#fff',
       },
     },
+
     components: {
+      MuiDialog: {
+        styleOverrides: {
+          root: {},
+          paper: {
+            //backgroundColor: '#000 !important',
+            borderRadius: 20,
+          },
+        },
+      },
+      MuiButton: {
+        variants: [
+          {
+            props: { variant: 'dashed' },
+            style: {
+              textTransform: 'none',
+              border: `2px dashed grey`,
+            },
+          },
+        ],
+      },
       MuiTabs: {
         styleOverrides: {
           root: {
@@ -260,26 +288,39 @@ export const themeSettings = (mode) => {
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
-            color: '#fff',
+            //borderRadius: 15,
+            //color: '#fff',
+            backgroundColor: mode === 'dark' && '#040D19',
+            //color: mode === 'light' ? '#000' : '#ffffff',
             '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#c0c0c0',
-              transition: 'border-color 0.3s ease',
+              borderColor: '#1b3c5e',
+              //borderColor: mode === 'light' ? '#000' : '#ffffff',
+              //transition: 'border-color 0.3s ease',
+              transition: 'border-color 0.2s linear',
             },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#ffffff',
+            '&:hover:not(.Mui-error) .MuiOutlinedInput-notchedOutline': {
+              borderColor: '#6ba0d4',
+              //borderColor: mode === 'light' ? '##7c2121' : '##7c2121',
             },
-            '&.MuiInputBase-multiline': {
-              padding: 30,
+            '&.Mui-focused:not(.Mui-error) .MuiOutlinedInput-notchedOutline': {
+              //boxShadow: `${alpha(colors.primary[200], 0.25)} 0 0 0 0.2rem`,
+              borderColor: '#6ba0d4',
+              //borderColor: colors.primary[200],
             },
+
+            //'&.MuiInputBase-multiline': {
+            //  padding: 30,
+            //},
           },
+
           input: {
             fontWeight: 500,
-            padding: '15.5px 14px',
-            borderRadius: '20px',
-            /* '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: '#1c2272',
-            }, */
+            //padding: '15.5px 14px',
+            //borderRadius: '20px',
+
+            '&:focused .MuiOutlinedInput-notchedOutline': {
+              //borderColor: '#f51811',
+            },
             '&.MuiInputBase-inputSizeSmall': {
               padding: '10px 14px',
               '&.MuiInputBase-inputAdornedStart': {
@@ -290,14 +331,71 @@ export const themeSettings = (mode) => {
           inputAdornedStart: {
             paddingLeft: 4,
           },
-          /* notchedOutline: {
+          notchedOutline: {
+            //borderRadius: '20px',
+            '&:hover .notchedOutline': {
+              //borderColor: '#1c2272',
+            },
+            '&:focused .notchedOutline': {
+              //borderColor: '#ee0f0fa6',
+            },
+          },
+        },
+      },
+      /* MuiOutlinedInput: {
+        styleOverrides: {
+          root: {
+            //borderRadius: 8,
+            border: 'none',
+            //backgroundColor: '#040d19',
+            //color: '#fff',
+            //color: mode === 'light' ? '#000' : '#ffffff',
+            '& .MuiOutlinedInput-notchedOutline': {
+              //borderColor: '#c0c0c0',
+              border: 'none',
+              borderColor: mode === 'light' ? '#000' : '#ffffff',
+              transition: 'border-color 0.3s ease',
+            },
+            '&:hover .MuiOutlinedInput-notchedOutline': {
+              //borderColor: '#7c2121',
+              borderColor: mode === 'light' ? '##7c2121' : '##7c2121',
+            },
+            '&:focus': {
+              boxShadow: `${alpha(colors.primary[200], 0.25)} 0 0 0 0.2rem`,
+              borderColor: colors.primary[200],
+            },
+            //'&.MuiInputBase-multiline': {
+            //  padding: 30,
+            //},
+          },
+          input: {
+            border: 'none',
+            fontWeight: 500,
+            padding: '15.5px 14px',
+            borderRadius: '20px',
+            //'&:hover .MuiOutlinedInput-notchedOutline': {
+            //  borderColor: '#1c2272',
+            //},
+            '&.MuiInputBase-inputSizeSmall': {
+              border: 'none',
+              padding: '10px 14px',
+              '&.MuiInputBase-inputAdornedStart': {
+                paddingLeft: 0,
+              },
+            },
+          },
+          inputAdornedStart: {
+            paddingLeft: 4,
+          },
+          notchedOutline: {
+            boreder: 'none',
             borderRadius: '20px',
             '&:hover .notchedOutline': {
               borderColor: '#1c2272',
             },
-          }, */
+          },
         },
-      },
+      }, */
     },
   };
 };
