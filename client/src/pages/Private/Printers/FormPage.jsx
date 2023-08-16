@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogActions,
   Box,
-  Typography,
   useTheme,
   Alert,
 } from '@mui/material';
@@ -21,9 +20,23 @@ import TecnicalForm from './Forms/TecnicalForm';
 import validationSchema from './FormModel/validationSchema';
 import printerFormModel from './FormModel/printerFormModel';
 import formInitialValues from './FormModel/formInitialValues';
+const {
+  formField: { nroInventario, nroSerie, maker, model, place, state },
+} = printerFormModel;
+
 import { StyledDialog } from '../../../components/StyledDialog';
 import { tokens } from '../../../theme';
-import { useCreatePrinterMutation } from '../../../api/printersApiSlice';
+
+import { useModal } from '../../../context/ModalContext';
+
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  selectAllPrinters,
+  selectPrinterById,
+  useCreatePrinterMutation,
+} from '../../../app/api/printersApiSlice';
+
+import { useSelector } from 'react-redux';
 
 const steps = ['Informacion Tecnica', 'Informacion Adicional'];
 const { formId, formField } = printerFormModel;
@@ -39,9 +52,10 @@ function _renderStepContent(step) {
   }
 }
 
-export default function FormPage({ title, open, onClose }) {
+export default function FormPage({ title, preloadedData }) {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { modalOpen, closeModal } = useModal();
 
   const [createPrinter, { error }] = useCreatePrinterMutation();
 
@@ -49,6 +63,27 @@ export default function FormPage({ title, open, onClose }) {
 
   const currentValidationSchema = validationSchema[activeStep];
   const isLastStep = activeStep === steps.length - 1;
+
+  const params = useParams();
+
+  const printerOne = useSelector((state) =>
+    selectPrinterById(state, params.id)
+  );
+
+  console.log(printerOne);
+
+  console.log(printerOne.maker.name);
+
+  console.log(formInitialValues);
+
+  const initialValues = printerOne
+    ? {
+        ...printerOne,
+        [maker.name]: printerOne.maker.name, // Asignar el nombre del fabricante directamente al campo maker
+      }
+    : formInitialValues;
+
+  console.log(printerOne);
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -59,19 +94,13 @@ export default function FormPage({ title, open, onClose }) {
   };
 
   async function _submitForm(values, actions) {
-    /* console.log(values);
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    alert(JSON.stringify(values, null, 2));
-    actions.setSubmitting(false); */
-
     try {
       const response = await createPrinter(values);
       actions.setSubmitting(false);
       if (!response.data.error) {
         setActiveStep(activeStep + 1);
         setTimeout(() => {
-          onClose();
+          //onClose();
           setTimeout(() => {
             setActiveStep(0);
           }, 200);
@@ -94,31 +123,18 @@ export default function FormPage({ title, open, onClose }) {
 
   return (
     <>
-      <StyledDialog
-        open={open}
-        onClose={onClose}
-        fullWidth
-        /* sx={{
-          //You can copy the code below in your theme
-          //background: 'rgba(0, 0, 0, 0.8)', // Change to 'red' for example to make it more visible
-          '& .MuiPaper-root': {
-            background: '#070e16', // Change to 'red' for example to make it more visible
-          },
-          '& .MuiBackdrop-root': {
-            backdropFilter: 'blur(1px)', // Change to 'red' for example to make it more visible
-
-            //backgroundColor: 'transparent', // Try to remove this to see the difference
-          },
-        }} */
-      >
+      <StyledDialog open={modalOpen} onClose={closeModal} fullWidth>
         <DialogTitle
           sx={{
             fontSize: '20px',
             fontWeight: '600',
             textAlign: 'center',
+            color: '#fff',
+            margin: 0,
+            padding: 1,
           }}
         >
-          <Typography>{title}</Typography>
+          Agregar Impresora
         </DialogTitle>
         <DialogContent
           sx={{
@@ -146,7 +162,7 @@ export default function FormPage({ title, open, onClose }) {
               <h5>Formulario Enviado</h5>
             ) : (
               <Formik
-                initialValues={formInitialValues}
+                initialValues={initialValues}
                 validationSchema={currentValidationSchema}
                 onSubmit={_handleSubmit}
               >

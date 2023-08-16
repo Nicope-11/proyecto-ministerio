@@ -14,7 +14,7 @@ import { printerSchema } from '../schemas/printer.schema.js';
 const router = Router();
 
 router.get('/impresoras', authRequired, getPrinters);
-//router.get('/impresoras/:id', authRequired, getPrinter);
+router.get('/impresoras/:id', authRequired, getPrinter);
 
 router.post(
   '/impresoras',

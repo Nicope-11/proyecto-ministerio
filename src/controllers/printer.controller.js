@@ -20,13 +20,15 @@ export const getPrinter = async (req, res) => {
   try {
     const id = req.params.id;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    /* if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'ID de fabricante inválido' });
-    }
+    } */
 
     const printer = await Printer.findById(id).populate(
-      'maker model place state'
+      'maker model place state',
+      'name'
     );
+
     if (!printer)
       return res.status(404).json({ message: 'Impresora no encontrada' });
     return res.json(printer);

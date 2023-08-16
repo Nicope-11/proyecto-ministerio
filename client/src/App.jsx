@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 
@@ -14,15 +14,18 @@ import NetworkPage from './pages/Private/NetWorkPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 import ProtectedRoute from './ProtectedRoute';
-import { TaskProvider } from './context/TasksContext';
 import Navbar from './components/Navbar';
 import { ColorModeContext, tokens, useMode } from './theme';
 import { PrivateRoutes, PublicRoutes } from './models/routes.js';
 import { Suspense } from 'react';
 import { ConfirmProvider } from 'material-ui-confirm';
+import FormPage from './pages/Private/Printers/FormPage.jsx';
+import { ModalProvider } from './context/ModalContext.jsx';
 
 function App() {
   const [theme, colorMode] = useMode();
+  const location = useLocation();
+  const background = location.state && location.state.background;
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -58,37 +61,47 @@ function App() {
               },
             }}
           >
-            <TaskProvider>
+            <ModalProvider>
               <Suspense fallback={<>Cargando</>}>
-                <BrowserRouter>
-                  <Navbar />
-                  <Routes>
-                    <Route path="/login" element={<LoginPage />} />
-                    {/* <Route path="/register" element={<RegisterPage />} /> */}
-                    <Route element={<ProtectedRoute />}>
-                      <Route path="/" element={<HomePage />} />
-                      <Route
-                        path={PrivateRoutes.COMPUTADORAS}
-                        element={<ComputerPage />}
-                      />
-                      <Route path="/monitores" element={<MonitorPage />} />
-                      <Route path="/impresoras" element={<PrinterPage />} />
-                      <Route path="/perifericos" element={<PeripheralPage />} />
-                      <Route path="/redes" element={<NetworkPage />} />
-                      <Route path="/profile" element={<ProfilePage />} />
-                      <Route path="*" element={<NotFoundPage />} />
+                <Navbar />
+                <Routes location={background || location}>
+                  <Route path="/login" element={<LoginPage />} />
+                  {/* <Route path="/register" element={<RegisterPage />} /> */}
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/" element={<HomePage />} />
+                    <Route
+                      path={PrivateRoutes.COMPUTADORAS}
+                      element={<ComputerPage />}
+                    />
+                    <Route path="/monitores" element={<MonitorPage />} />
+                    <Route path="/impresoras" element={<PrinterPage />}>
+                      <Route path="agregar" element={<FormPage />} />
+                      <Route path="editar/:id" element={<FormPage />} />
                     </Route>
+                    <Route path="/perifericos" element={<PeripheralPage />} />
+                    <Route path="/redes" element={<NetworkPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Route>
+                </Routes>
+                {background && (
+                  <Routes>
+                    <Route path="impresoras/agregar" element={<FormPage />} />
+                    <Route
+                      path="impresoras/editar/:id"
+                      element={<FormPage />}
+                    />
                   </Routes>
-                  {/* <Routes>
+                )}
+                {/* <Routes>
                   <Route path={PublicRoutes.LOGIN} element={<LoginPage />} />
                   <Route element={<AuthGuard privateValidation={true} />}>
-                    <Route path={`/*`} element={<Private />} />
+                  <Route path={`/*`} element={<Private />} />
                   </Route>
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes> */}
-                </BrowserRouter>
               </Suspense>
-            </TaskProvider>
+            </ModalProvider>
           </ConfirmProvider>
         </AuthProvider>
       </ThemeProvider>

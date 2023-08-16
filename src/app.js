@@ -26,9 +26,9 @@ app.use(cookieParser());
 app.use('/api', authRoutes);
 app.use('/api', taskRoutes);
 app.use('/api', placeRoutes);
-app.use('/api', printerRoutes);
 app.use('/api', stateRoutes);
 app.use('/api', modelRoutes);
 app.use('/api', makerRoutes);
+app.use('/api', printerRoutes);
 
 export default app;

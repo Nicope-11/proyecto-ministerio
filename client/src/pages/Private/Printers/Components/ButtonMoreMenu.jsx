@@ -5,12 +5,17 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FeedIcon from '@mui/icons-material/Feed';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDeletePrinterMutation } from '../../../../api/printersApiSlice';
+import { useDeletePrinterMutation } from '../../../../app/api/printersApiSlice';
 import { useConfirm } from 'material-ui-confirm';
+import { Link, useLocation } from 'react-router-dom';
+import { useModal } from '../../../../context/ModalContext';
 
 const ButtonMoreMenu = ({ id, name }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  const { openModal } = useModal();
+  const location = useLocation();
 
   const [deletePrinter] = useDeletePrinterMutation();
 
@@ -49,7 +54,12 @@ const ButtonMoreMenu = ({ id, name }) => {
           <FeedIcon />
           Ver mas
         </MenuItem>
-        <MenuItem onClick={handleEdit}>
+        <MenuItem
+          component={Link}
+          to={`editar/${id}`}
+          onClick={openModal}
+          state={{ background: location }}
+        >
           <EditIcon />
           Editar
         </MenuItem>

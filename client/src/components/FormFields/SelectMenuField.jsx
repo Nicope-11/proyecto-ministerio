@@ -9,7 +9,7 @@ import {
   FormHelperText,
   Box,
 } from '@mui/material';
-import axios from '../../api/axios';
+import axios from '../../app/axios';
 import { MenuForm } from '../MenuForm';
 import { useConfirm } from 'material-ui-confirm';
 

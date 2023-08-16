@@ -41,12 +41,12 @@ const printerSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-printerSchema.set('toJSON', {
+/* printerSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id;
     delete returnedObject._id;
     delete returnedObject.__v;
   },
 });
-
+ */
 export default mongoose.model('Printer', printerSchema);

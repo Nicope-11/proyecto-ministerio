@@ -6,14 +6,26 @@ import { useGridApiRef } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
 import StyledSearchInput from '../../../components/StyledSearchInput';
 import ButtonMoreMenu from './Components/ButtonMoreMenu';
-import FormPage from './FormPage';
-import { useGetPrintersQuery } from '../../../api/printersApiSlice';
+import {
+  selectAllPrinters,
+  selectPrinterById,
+  useGetPrintersQuery,
+} from '../../../app/api/printersApiSlice';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useModal } from '../../../context/ModalContext';
+import { useSelector } from 'react-redux';
 
 const PrinterPage = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { openModal } = useModal();
+  const [preloadedData, setPreloadedData] = useState({});
+
+  const location = useLocation();
 
   const { data: printers, isError, isLoading } = useGetPrintersQuery();
+
+  const printerData = useSelector(selectAllPrinters);
 
   const columns = [
     {
@@ -96,7 +108,6 @@ const PrinterPage = () => {
   ];
   const apiRef = useGridApiRef();
   const [searchText, setSearchText] = useState('');
-  const [openForm, setOpenForm] = useState(false);
 
   const updateSearchValue = useMemo(() => {
     return debounce((newValue) => {
@@ -128,11 +139,12 @@ const PrinterPage = () => {
 
   return (
     <>
-      <FormPage
+      {/*       <FormPage
         title="Agregar impresora"
         open={openForm}
         onClose={() => setOpenForm(false)}
-      />
+        preloadedData={preloadedData}
+      /> */}
       <Box
         bgcolor={colors.primary[700]}
         margin={1}
@@ -158,10 +170,13 @@ const PrinterPage = () => {
               Impresoras
             </Typography>
             <Button
+              component={Link}
+              to="agregar"
+              onClick={openModal}
+              state={{ background: location }}
               variant="contained"
               size="small"
               color="primary"
-              onClick={() => setOpenForm(true)}
             >
               Agregar
             </Button>
@@ -186,13 +201,14 @@ const PrinterPage = () => {
           flex={15}
         >
           <CustomTable
-            data={printers || []}
+            data={printerData || []}
             header={columns}
             apiRef={apiRef}
             isLoading={isLoading}
           />
         </Box>
       </Box>
+      <Outlet />
     </>
   );
 };
