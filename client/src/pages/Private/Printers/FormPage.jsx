@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Stepper,
   Step,
@@ -20,18 +20,14 @@ import TecnicalForm from './Forms/TecnicalForm';
 import validationSchema from './FormModel/validationSchema';
 import printerFormModel from './FormModel/printerFormModel';
 import formInitialValues from './FormModel/formInitialValues';
-const {
-  formField: { nroInventario, nroSerie, maker, model, place, state },
-} = printerFormModel;
 
 import { StyledDialog } from '../../../components/StyledDialog';
 import { tokens } from '../../../theme';
 
 import { useModal } from '../../../context/ModalContext';
 
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
-  selectAllPrinters,
   selectPrinterById,
   useCreatePrinterMutation,
 } from '../../../app/api/printersApiSlice';
@@ -69,19 +65,6 @@ export default function FormPage({ title, preloadedData }) {
   const printerOne = useSelector((state) =>
     selectPrinterById(state, params.id)
   );
-
-  console.log(printerOne);
-
-  console.log(printerOne.maker.name);
-
-  console.log(formInitialValues);
-
-  const initialValues = printerOne
-    ? {
-        ...printerOne,
-        [maker.name]: printerOne.maker.name, // Asignar el nombre del fabricante directamente al campo maker
-      }
-    : formInitialValues;
 
   console.log(printerOne);
 
@@ -162,7 +145,7 @@ export default function FormPage({ title, preloadedData }) {
               <h5>Formulario Enviado</h5>
             ) : (
               <Formik
-                initialValues={initialValues}
+                initialValues={formInitialValues}
                 validationSchema={currentValidationSchema}
                 onSubmit={_handleSubmit}
               >
