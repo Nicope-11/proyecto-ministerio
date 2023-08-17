@@ -37,7 +37,7 @@ export function SelectMenuField(props) {
   const [touched, error] = at(meta, 'touched', 'error');
   const isError = touched && error && true;
 
-  //const confirm = useConfirm();
+  const confirm = useConfirm();
 
   useEffect(() => {
     setMenuOptions(initialData || []);
@@ -71,7 +71,7 @@ export function SelectMenuField(props) {
         });
         const newMenuOptions = [
           ...menuOptions,
-          { name: newOption, id: res.data.insertId },
+          { name: newOption, id: res.data.id },
         ];
         setMenuOptions(newMenuOptions);
       }
@@ -80,10 +80,10 @@ export function SelectMenuField(props) {
     }
   };
 
-  /* const deleteOption = async () => {
+  const deleteOption = async () => {
     try {
       await confirm({
-        description: `El ${label} ${selectedOption.nombre} se eliminará permanentemente.`,
+        description: `El ${label} ${selectedOption.name} se eliminará permanentemente.`,
       });
       await axios.delete(`${url}/${selectedOption.id}`);
       const newMenuOptions = menuOptions.filter(
@@ -95,7 +95,7 @@ export function SelectMenuField(props) {
     } catch (error) {
       console.log('Deletion cancelled.');
     }
-  }; */
+  };
 
   return (
     <FormControl {...rest} error={isError}>
@@ -127,7 +127,7 @@ export function SelectMenuField(props) {
           label={label}
           selectedOption={selectedOption}
           addOption={addOption}
-          //deleteOption={deleteOption}
+          deleteOption={deleteOption}
         />
       </Box>
       {_renderHelperText()}
