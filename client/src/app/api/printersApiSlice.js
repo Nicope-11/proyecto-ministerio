@@ -11,11 +11,11 @@ export const printersApiSlice = apiSlice.injectEndpoints({
     getPrinters: builder.query({
       query: () => '/impresoras',
       transformResponse: (responseData) => {
-        const loadedUsers = responseData.map((printer) => {
+        const loadedPrinters = responseData.map((printer) => {
           printer.id = printer._id;
           return printer;
         });
-        return printersAdapter.setAll(initialState, loadedUsers);
+        return printersAdapter.setAll(initialState, loadedPrinters);
       },
       providesTags: (result, error, arg) => {
         if (result?.ids) {
@@ -49,13 +49,26 @@ export const printersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: [{ type: 'Printer', id: 'LIST' }],
     }),
+    getMakersOptions: builder.query({
+      query: () => '/impresoras/fabricantes', // Ruta para obtener opciones de fabricantes
+      providesTags: ['MakersOptions'],
+    }),
+    deleteMakersOptions: builder.mutation({
+      query: (printerId) => ({
+        url: `/impresoras/fabricantes/${printerId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['MakersOptions'],
+    }),
   }),
 });
 
 export const {
   useGetPrintersQuery,
   useCreatePrinterMutation,
+  useUpdatePrinterMutation,
   useDeletePrinterMutation,
+  useGetMakersOptionsQuery,
 } = printersApiSlice;
 
 export const selectPrintersResult =
@@ -70,7 +83,6 @@ export const {
   selectAll: selectAllPrinters,
   selectById: selectPrinterById,
   selectIds: selectPrinterIds,
-  // Pass in a selector that returns the users slice of state
 } = printersAdapter.getSelectors(
   (state) => selectPrintersData(state) ?? initialState
 );
