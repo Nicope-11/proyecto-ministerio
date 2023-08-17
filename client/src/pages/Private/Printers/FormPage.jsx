@@ -26,10 +26,11 @@ import { tokens } from '../../../theme';
 
 import { useModal } from '../../../context/ModalContext';
 
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   selectPrinterById,
   useCreatePrinterMutation,
+  useUpdatePrinterMutation,
 } from '../../../app/api/printersApiSlice';
 
 import { useSelector } from 'react-redux';
@@ -53,7 +54,10 @@ export default function FormPage({ title, preloadedData }) {
   const colors = tokens(theme.palette.mode);
   const { modalOpen, closeModal } = useModal();
 
+  const navigate = useNavigate();
+
   const [createPrinter, { error }] = useCreatePrinterMutation();
+  const [updatePrinter] = useUpdatePrinterMutation();
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -62,11 +66,17 @@ export default function FormPage({ title, preloadedData }) {
 
   const params = useParams();
 
-  const printerOne = useSelector((state) =>
-    selectPrinterById(state, params.id)
-  );
+  const printer = useSelector((state) => selectPrinterById(state, params.id));
 
-  console.log(printerOne);
+  const initialValues = printer
+    ? {
+        ...printer,
+        [formField.maker.name]: printer.maker.id,
+        [formField.model.name]: printer.model.id,
+        [formField.place.name]: printer.place.id,
+        [formField.state.name]: printer.state.id,
+      }
+    : formInitialValues;
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -76,14 +86,22 @@ export default function FormPage({ title, preloadedData }) {
     setActiveStep(activeStep - 1);
   };
 
+  // MEJORAR MANEJO DE ERRORES
+
   async function _submitForm(values, actions) {
     try {
-      const response = await createPrinter(values);
+      let response;
+      if (params.id) {
+        response = await updatePrinter(values);
+      } else {
+        response = await createPrinter(values);
+      }
       actions.setSubmitting(false);
       if (!response.data.error) {
         setActiveStep(activeStep + 1);
         setTimeout(() => {
           //onClose();
+          navigate('/impresoras');
           setTimeout(() => {
             setActiveStep(0);
           }, 200);
@@ -145,7 +163,7 @@ export default function FormPage({ title, preloadedData }) {
               <h5>Formulario Enviado</h5>
             ) : (
               <Formik
-                initialValues={formInitialValues}
+                initialValues={initialValues}
                 validationSchema={currentValidationSchema}
                 onSubmit={_handleSubmit}
               >
