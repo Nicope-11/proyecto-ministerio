@@ -1,6 +1,6 @@
 import Model from '../models/model.model.js';
 import Maker from '../models/maker.model.js';
-import { transformType } from '../middlewares/transformType.js';
+import { transformType } from '../utilities/transformType.js';
 import mongoose from 'mongoose';
 
 export const getModels = async (req, res) => {
@@ -29,6 +29,24 @@ export const getModel = async (req, res) => {
     }
 
     return res.json(model);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+};
+export const getModelByMaker = async (req, res) => {
+  try {
+    const maker = req.params.maker;
+    const type = transformType(req.params.type);
+
+    const models = await Model.find({ maker });
+
+    const foundModel = models.find((model) => model.type === type);
+
+    if (!foundModel) {
+      return res.status(404).json({ message: 'Modelos no encontrado' });
+    }
+
+    return res.json(models);
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }

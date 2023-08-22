@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import { TOKEN_SECRET } from '../config.js';
 
 export const authRequired = (req, res, next) => {
   const { token } = req.cookies;
@@ -7,7 +6,7 @@ export const authRequired = (req, res, next) => {
   if (!token)
     return res.status(401).json({ message: 'No token, autorizacion denegada' });
 
-  jwt.verify(token, TOKEN_SECRET, (err, user) => {
+  jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
     if (err) return res.status(403).json({ message: 'Token invalido' });
 
     req.user = user;

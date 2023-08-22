@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Maker from '../models/maker.model.js';
-import { transformType } from '../middlewares/transformType.js';
+import { transformType } from '../utilities/transformType.js';
 
 export const getMakers = async (req, res) => {
   try {

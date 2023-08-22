@@ -3,6 +3,7 @@ import { authRequired } from '../middlewares/validateToken.js';
 import {
   getModels,
   getModel,
+  getModelByMaker,
   createModel,
   updateModel,
   deleteModel,
@@ -13,7 +14,8 @@ import { modelSchema, updateModelSchema } from '../schemas/model.schema.js';
 const router = Router();
 
 router.get('/:type/modelos', authRequired, getModels);
-router.get('/:type/modelos/:id', authRequired, getModel);
+router.get('/:type/modelos/:maker', authRequired, getModelByMaker);
+//router.get('/:type/modelos/:id', authRequired, getModel);
 router.post(
   '/:type/modelos',
   authRequired,
