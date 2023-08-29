@@ -13,9 +13,7 @@ import { tokens } from '../../../theme';
 import ComputerTable from './ComputerTable';
 import { useMemo, useState } from 'react';
 import { mockDataComputer } from './DataComputer';
-import CustomDialog, {
-  dialogOpenSubject$,
-} from '../../../components/CustomDialog';
+
 import { useGridApiRef } from '@mui/x-data-grid';
 
 const ComputerPage = () => {
@@ -47,15 +45,8 @@ const ComputerPage = () => {
 
   // Modal
 
-  const handleOpenDialog = () => {
-    dialogOpenSubject$.setSubject('dialog1');
-  };
-
   return (
     <>
-      <CustomDialog onClose="dialog1">
-        <h2>hola</h2>
-      </CustomDialog>
       <Box
         bgcolor={colors.primary[700]}
         margin={1}
