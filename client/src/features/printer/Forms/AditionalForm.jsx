@@ -1,5 +1,5 @@
 import { Grid, Typography } from '@mui/material';
-import NewSelectWithMenu from '../../../components/FormFields/NewSelectWithMenu';
+import SelectWithMenu from '../../../components/FormFields/SelectWithMenu';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateField } from '../formPrinterSlice';
 import { useGetOptionsQuery } from '../../../app/api/optionsApiSlice';
@@ -37,7 +37,7 @@ export default function AditionalForm(props) {
       }
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
-          <NewSelectWithMenu
+          <SelectWithMenu
             name={place.name}
             label={place.label}
             url={place.url}
@@ -51,7 +51,7 @@ export default function AditionalForm(props) {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <NewSelectWithMenu
+          <SelectWithMenu
             name={state.name}
             label={state.label}
             url={state.url}

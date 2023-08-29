@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useGetOptionsQuery } from '../../../app/api/optionsApiSlice';
 import { updateField } from '../formPrinterSlice';
 import { InputField } from '../../../components/FormFields';
-import NewSelectWithMenu from '../../../components/FormFields/NewSelectWithMenu';
+import SelectWithMenu from '../../../components/FormFields/SelectWithMenu';
 
 export default function TecnicalForm(props) {
   const {
@@ -52,7 +52,7 @@ export default function TecnicalForm(props) {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <NewSelectWithMenu
+          <SelectWithMenu
             name={maker.name}
             label={maker.label}
             value={formData.maker}
@@ -67,7 +67,7 @@ export default function TecnicalForm(props) {
           />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <NewSelectWithMenu
+          <SelectWithMenu
             name="model"
             label="modelo"
             options={formData.maker ? optionsModels : []}
