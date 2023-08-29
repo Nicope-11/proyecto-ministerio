@@ -7,6 +7,7 @@ import {
   createModel,
   updateModel,
   deleteModel,
+  getModelOrByMaker,
 } from '../controllers/model.controller.js';
 import { validateSchema } from '../middlewares/validator.middleware.js';
 import { modelSchema, updateModelSchema } from '../schemas/model.schema.js';
@@ -14,8 +15,9 @@ import { modelSchema, updateModelSchema } from '../schemas/model.schema.js';
 const router = Router();
 
 router.get('/:type/modelos', authRequired, getModels);
-router.get('/:type/modelos/:maker', authRequired, getModelByMaker);
+router.get('/:type/modelos/:id', authRequired, getModelOrByMaker);
 //router.get('/:type/modelos/:id', authRequired, getModel);
+//router.get('/:type/modelos/:maker', /* authRequired, */ getModelByMaker);
 router.post(
   '/:type/modelos',
   authRequired,

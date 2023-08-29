@@ -22,7 +22,7 @@ export const getModel = async (req, res) => {
       return res.status(400).json({ message: 'ID de fabricante inválido' });
     }
 
-    const model = await Model.findById(id);
+    const model = await Model.findById(id).populate('maker', 'name');
 
     if (!model || model.type !== type) {
       return res.status(404).json({ message: 'Fabricante no encontrado' });
@@ -33,12 +33,42 @@ export const getModel = async (req, res) => {
     return res.status(404).json({ error: error.message });
   }
 };
+
+export const getModelOrByMaker = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const type = transformType(req.params.type);
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'ID de fabricante inválido' });
+    }
+
+    const model = await Model.findById(id).populate('maker', 'name');
+
+    if (model && model.type === type) {
+      return res.json(model);
+    }
+
+    const models = await Model.find({ maker: id }).populate('maker', 'name');
+
+    const foundModel = models.find((model) => model.type === type);
+
+    if (!foundModel) {
+      return res.status(404).json({ message: 'Modelos no encontrados' });
+    }
+
+    return res.json(models);
+  } catch (error) {
+    return res.status(404).json({ error: error.message });
+  }
+};
+
 export const getModelByMaker = async (req, res) => {
   try {
     const maker = req.params.maker;
     const type = transformType(req.params.type);
 
-    const models = await Model.find({ maker });
+    const models = await Model.find({ maker }).populate('maker', 'name');
 
     const foundModel = models.find((model) => model.type === type);
 
