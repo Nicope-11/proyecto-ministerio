@@ -1,10 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Stepper,
   Step,
   StepLabel,
   Button,
-  CircularProgress,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -19,21 +18,20 @@ import TecnicalForm from './Forms/TecnicalForm';
 
 import validationSchema from './FormModel/validationSchema';
 import printerFormModel from './FormModel/printerFormModel';
-import formInitialValues from './FormModel/formInitialValues';
-
-import { StyledDialog } from '../../../components/StyledDialog';
-import { tokens } from '../../../theme';
-
-import { useModal } from '../../../context/ModalContext';
 
 import { useNavigate, useParams } from 'react-router-dom';
+
+import { useDispatch, useSelector } from 'react-redux';
+import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
+import { tokens } from '../../theme';
+import { useModal } from '../../context/ModalContext';
 import {
   selectPrinterById,
   useCreatePrinterMutation,
   useUpdatePrinterMutation,
-} from '../../../app/api/printersApiSlice';
-
-import { useSelector } from 'react-redux';
+} from '../../app/api/printersApiSlice';
+import { StyledDialog } from '../../components/StyledDialog';
+import { resetField, setIntialField } from './formPrinterSlice';
 
 const steps = ['Informacion Tecnica', 'Informacion Adicional'];
 const { formId, formField } = printerFormModel;
@@ -49,15 +47,27 @@ function _renderStepContent(step) {
   }
 }
 
-export default function FormPage({ title, preloadedData }) {
+export default function FormPrinter() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { modalOpen, closeModal } = useModal();
 
+  const formData = useSelector((state) => state.formPrinter);
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
 
-  const [createPrinter, { error }] = useCreatePrinterMutation();
-  const [updatePrinter] = useUpdatePrinterMutation();
+  const [createPrinter, { isSuccess, isLoading, isError, error }] =
+    useCreatePrinterMutation();
+  const [
+    updatePrinter,
+    {
+      isSuccess: isUpdSuccess,
+      isLoading: isUpdLoading,
+      isError: isUpdError,
+      error: errorUpd,
+    },
+  ] = useUpdatePrinterMutation();
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -68,15 +78,20 @@ export default function FormPage({ title, preloadedData }) {
 
   const printer = useSelector((state) => selectPrinterById(state, params.id));
 
-  const initialValues = printer
-    ? {
+  useEffect(() => {
+    if (printer) {
+      const parsePrinter = {
         ...printer,
         [formField.maker.name]: printer.maker.id,
         [formField.model.name]: printer.model.id,
         [formField.place.name]: printer.place.id,
-        [formField.state.name]: printer.state.id,
-      }
-    : formInitialValues;
+        stateOption: printer.state.id,
+      };
+      dispatch(setIntialField(parsePrinter));
+    } else {
+      dispatch(resetField());
+    }
+  }, [printer, dispatch]);
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -88,7 +103,7 @@ export default function FormPage({ title, preloadedData }) {
 
   // MEJORAR MANEJO DE ERRORES
 
-  async function _submitForm(values, actions) {
+  /* async function _submitForm(values, actions) {
     try {
       let response;
       if (params.id) {
@@ -120,7 +135,34 @@ export default function FormPage({ title, preloadedData }) {
       actions.setTouched({});
       actions.setSubmitting(false);
     }
-  }
+  } */
+
+  useEffect(() => {
+    if (isSuccess || isUpdSuccess) {
+      navigate('/impresoras');
+      setActiveStep(0);
+    }
+  }, [isSuccess, isUpdSuccess, navigate]);
+
+  const _handleSubmit = async (values, actions) => {
+    if (isLastStep) {
+      try {
+        if (params.id) {
+          await updatePrinter(values);
+        } else {
+          await createPrinter(values);
+        }
+      } catch (err) {
+        console.error('Error al agregar la impresora:', err);
+      }
+    } else {
+      handleNext();
+      actions.setTouched({});
+      actions.setSubmitting(false);
+    }
+  };
+
+  const errContent = (error?.data?.message || errorUpd?.data?.message) ?? '';
 
   return (
     <>
@@ -157,13 +199,14 @@ export default function FormPage({ title, preloadedData }) {
               ))}
             </Stepper>
           </Box>
-          {error && <Alert severity="error">{error?.data?.message}</Alert>}
+          {errContent && <Alert severity="error">{errContent}</Alert>}
           <>
             {activeStep === steps.length ? (
               <h5>Formulario Enviado</h5>
             ) : (
               <Formik
-                initialValues={initialValues}
+                enableReinitialize
+                initialValues={formData}
                 validationSchema={currentValidationSchema}
                 onSubmit={_handleSubmit}
               >
@@ -187,15 +230,14 @@ export default function FormPage({ title, preloadedData }) {
                             Atras
                           </Button>
                         )}
-                        <Button
+                        <LoadingButton
                           type="submit"
                           variant="contained"
-                          color="secondary"
                           disabled={isSubmitting}
+                          loading={isLoading || isUpdLoading}
                         >
                           {isLastStep ? 'Agregar' : 'Siguiente'}
-                        </Button>
-                        {isSubmitting && <CircularProgress size={24} />}
+                        </LoadingButton>
                       </Box>
                     </DialogActions>
                   </Form>
