@@ -45,7 +45,7 @@ export const createMaker = async (req, res) => {
 
     if (existingMaker)
       return res.status(400).json({
-        message: 'Ya existe un fabricante con el mismo nombre y tipo',
+        message: 'Ya existe un fabricante con ese nombre',
       });
 
     const newMaker = new Maker({
@@ -94,7 +94,7 @@ export const updateMaker = async (req, res) => {
 
     if (existingMaker)
       return res.status(400).json({
-        message: 'Ya existe un fabricante con el mismo nombre y tipo',
+        message: 'Ya existe un fabricante con ese nombre',
       });
 
     const maker = await Maker.findOneAndUpdate(
