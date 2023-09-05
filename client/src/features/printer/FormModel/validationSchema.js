@@ -8,7 +8,7 @@ export default [
   Yup.object().shape({
     [nroInventario.name]: Yup.string()
       .required(`${nroInventario.requiredErrorMsg}`)
-      .matches(/^[A-Z]{3}-\d{2,}$/, 'Formato invalido, Ej: MO-10'),
+      .matches(/^[A-Z]{3}-\d{2,}$/, 'Formato invalido, Ej: IMP-10'),
     [nroSerie.name]: Yup.string().required(`${nroSerie.requiredErrorMsg}`),
     [maker.name]: Yup.string().required(`${maker.requiredErrorMsg}`),
     [model.name]: Yup.string().required(`${maker.requiredErrorMsg}`),
