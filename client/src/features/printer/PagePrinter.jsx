@@ -68,6 +68,42 @@ const PagePrinter = () => {
       valueGetter: (params) => params.row.model.name,
     },
     {
+      field: 'createdAt',
+      headerName: 'Fecha de Creación',
+      headerAlign: 'center',
+      align: 'center',
+      flex: 2,
+      valueGetter: (params) => {
+        const createdAt = params.row.createdAt;
+
+        const formattedDate = new Date(createdAt).toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        });
+
+        return formattedDate;
+      },
+    },
+    {
+      field: 'updatedAt',
+      headerName: 'Fecha de Actualización',
+      headerAlign: 'center',
+      align: 'center',
+      flex: 2,
+      valueGetter: (params) => {
+        const updatedAt = params.row.updatedAt;
+
+        const formattedDate = new Date(updatedAt).toLocaleString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        });
+
+        return formattedDate;
+      },
+    },
+    {
       field: 'state',
       headerName: 'Estado',
       headerAlign: 'center',
