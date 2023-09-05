@@ -33,10 +33,10 @@ const printerSchema = new mongoose.Schema(
       ref: 'State',
       required: true,
     },
-    /* user: {
+    createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-    }, */
+    },
   },
   { timestamps: true }
 );
