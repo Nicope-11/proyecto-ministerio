@@ -1,9 +1,10 @@
 import { useAuth } from '../context/AuthContext';
 import { loginSchema } from '../schemas/auth.schema';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import {
+  Alert,
   Box,
   Button,
   FormControl,
@@ -13,11 +14,25 @@ import {
   useTheme,
 } from '@mui/material';
 import { tokens } from '../theme';
+import { useSnackbar } from 'notistack';
 
 function LoginPage() {
   const navigate = useNavigate();
-
+  const [error, setError] = useState('');
   const { signin, errors: loginErrors, isAuthenticated } = useAuth();
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    if (loginErrors?.message) {
+      enqueueSnackbar(loginErrors?.message, {
+        variant: 'error',
+        anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+        },
+      });
+    }
+  }, [loginErrors]);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -25,6 +40,8 @@ function LoginPage() {
   const handleSubmit = (data) => {
     signin(data);
   };
+
+  console.log(loginErrors);
 
   useEffect(() => {
     if (isAuthenticated) navigate('/');
@@ -70,6 +87,7 @@ function LoginPage() {
               ingrese para continuar
             </Typography>
           </Box>
+          {/*           {error && <Alert severity="error">{error}</Alert>} */}
           <Formik
             initialValues={{ email: '', password: '' }}
             onSubmit={(values) => {
