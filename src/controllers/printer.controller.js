@@ -8,8 +8,8 @@ import mongoose from 'mongoose';
 export const getPrinters = async (req, res) => {
   try {
     const printers = await Printer.find().populate(
-      'maker model place state',
-      'name'
+      'maker model place state createdBy',
+      'name username email'
     );
     return res.json(printers);
   } catch (error) {
@@ -25,8 +25,8 @@ export const getPrinter = async (req, res) => {
     } */
 
     const printer = await Printer.findById(id).populate(
-      'maker model place state',
-      'name'
+      'maker model place state createdBy',
+      'name username email'
     );
 
     if (!printer)
@@ -77,10 +77,13 @@ export const createPrinter = async (req, res) => {
       model,
       place,
       state,
-      //user: req.user.id,
+      createdBy: req.user.id,
     });
     const savedPrinter = await newPrinter.save();
-    return res.json(savedPrinter);
+
+    return res
+      .status(201)
+      .json({ data: savedPrinter, message: 'Impresora creada exitosamente' });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -164,7 +167,10 @@ export const updatePrinter = async (req, res) => {
 
     if (!printer)
       return res.status(404).json({ message: 'Impresora no encontrada' });
-    return res.json(printer);
+
+    return res
+      .status(201)
+      .json({ data: printer, message: 'Impresora editada exitosamente' });
   } catch (error) {
     return res.status(404).json({ error: error.message });
   }

@@ -34,7 +34,17 @@ export const createState = async (req, res) => {
 };
 export const deleteState = async (req, res) => {
   try {
-    const state = await State.findByIdAndDelete(req.params.id);
+    const id = req.params.id;
+    const isUsed = await isStateInUse(id);
+
+    if (isUsed) {
+      return res.status(400).json({
+        message:
+          'No puedes eliminar este estado porque está en uso en alguna categoría',
+      });
+    }
+
+    const state = await State.findByIdAndDelete(id);
     if (!state)
       return res.status(404).json({ message: 'Estado no encontrado' });
     return res.sendStatus(204);
@@ -55,3 +65,12 @@ export const updateState = async (req, res) => {
     return res.status(404).json({ message: 'Estado no encontrado' });
   }
 };
+
+async function isStateInUse(id) {
+  const printerExists = await Printer.exists({ state: id });
+  //const monitorExists = await Monitor.exists({ state: id });
+  //const computerExists = await Computer.exists({ state: id });
+  //const peripheralExists = await Peripheral.exists({ state: id });
+
+  return printerExists; //|| monitorExists || computerExists || peripheralExists;
+}

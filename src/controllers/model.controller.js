@@ -1,5 +1,6 @@
 import Model from '../models/model.model.js';
 import Maker from '../models/maker.model.js';
+import Printer from '../models/printer.model.js';
 import { transformType } from '../utilities/transformType.js';
 import mongoose from 'mongoose';
 
@@ -131,6 +132,15 @@ export const deleteModel = async (req, res) => {
       return res.status(400).json({ message: 'ID de fabricante inválido' });
     }
 
+    const isUsed = await isModelInUse(id);
+
+    if (isUsed) {
+      return res.status(400).json({
+        message:
+          'No puedes eliminar este modelo porque está en uso en alguna categoría',
+      });
+    }
+
     const model = await Model.findOneAndDelete({ _id: id, type });
     if (!model)
       return res.status(404).json({ message: 'Modelo no encontrado' });
@@ -146,6 +156,7 @@ export const deleteModel = async (req, res) => {
     return res.status(404).json({ error: error.message });
   }
 };
+
 export const updateModel = async (req, res) => {
   try {
     const { name } = req.validData;
@@ -177,3 +188,12 @@ export const updateModel = async (req, res) => {
     return res.status(404).json({ error: error.message });
   }
 };
+
+async function isModelInUse(id) {
+  const printerExists = await Printer.exists({ model: id });
+  //const monitorExists = await Monitor.exists({ model: id });
+  //const computerExists = await Computer.exists({ model: id });
+  //const peripheralExists = await Peripheral.exists({ model: id });
+
+  return printerExists; //|| monitorExists || computerExists || peripheralExists;
+}
