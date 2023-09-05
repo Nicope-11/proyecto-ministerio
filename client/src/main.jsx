@@ -5,6 +5,7 @@ import { ApiProvider } from '@reduxjs/toolkit/query/react';
 import { apiSlice } from './app/api/apiSlice.js';
 import { Provider } from 'react-redux';
 import { store } from './app/store.js';
+import { SnackbarProvider } from 'notistack';
 
 import './index.css';
 import '@fontsource/roboto/300.css';
@@ -17,7 +18,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <SnackbarProvider autoHideDuration={3000} preventDuplicate>
+          <App />
+        </SnackbarProvider>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>

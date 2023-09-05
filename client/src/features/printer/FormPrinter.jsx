@@ -12,6 +12,7 @@ import {
   Alert,
 } from '@mui/material';
 import { Formik, Form } from 'formik';
+import { useSnackbar } from 'notistack';
 
 import AditionalForm from './Forms/AditionalForm';
 import TecnicalForm from './Forms/TecnicalForm';
@@ -51,17 +52,19 @@ export default function FormPrinter() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { modalOpen, closeModal } = useModal();
+  const { enqueueSnackbar } = useSnackbar();
 
   const formData = useSelector((state) => state.formPrinter);
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
-  const [createPrinter, { isSuccess, isLoading, isError, error }] =
+  const [createPrinter, { data, isSuccess, isLoading, isError, error }] =
     useCreatePrinterMutation();
   const [
     updatePrinter,
     {
+      data: dataUpd,
       isSuccess: isUpdSuccess,
       isLoading: isUpdLoading,
       isError: isUpdError,
@@ -141,8 +144,13 @@ export default function FormPrinter() {
     if (isSuccess || isUpdSuccess) {
       navigate('/impresoras');
       setActiveStep(0);
+      console.log(data);
+      console.log(dataUpd);
+      enqueueSnackbar(data?.message || dataUpd?.message, {
+        variant: 'success',
+      });
     }
-  }, [isSuccess, isUpdSuccess, navigate]);
+  }, [isSuccess, isUpdSuccess]);
 
   const _handleSubmit = async (values, actions) => {
     if (isLastStep) {

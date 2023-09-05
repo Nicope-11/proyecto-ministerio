@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { useEffect, useState } from 'react';
+import { useSnackbar } from 'notistack';
 
 import EditIcon from '@mui/icons-material/Edit';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
@@ -28,6 +29,7 @@ import {
 import { StyledDialog } from '../StyledDialog';
 import { tokens } from '../../theme';
 import { StyledMenu } from '../StyledMenu';
+import { useConfirm } from 'material-ui-confirm';
 
 const validationSchema = Yup.object({
   name: Yup.string().required('El nombre es requerido'),
@@ -41,6 +43,8 @@ const MenuSelect = ({ url, name, label, disabled, valuesForm, setField }) => {
   const [initialValues, setInitialValues] = useState(valuesForm);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const { enqueueSnackbar } = useSnackbar();
+  const confirm = useConfirm();
 
   const { data } = useGetOptionsQuery(`${url}/${valuesForm?.name}`);
 
@@ -89,13 +93,27 @@ const MenuSelect = ({ url, name, label, disabled, valuesForm, setField }) => {
       await confirm({
         description: `El ${label} ${data.name} se eliminará permanentemente.`,
       });
-      deleteOption({ url, id: data.id });
-      setField(name, '');
-      handleClose();
+      const { error: errorDel } = await deleteOption({ url, id: data.id });
+      if (!errorDel) {
+        setField(name, '');
+        handleClose();
+      } else {
+        enqueueSnackbar(errorDel?.data?.message, {
+          variant: 'error',
+        });
+      }
     } catch (error) {
       console.log('Deletion cancelled.');
     }
   };
+
+  /* useEffect(() => {
+    if (errorDel) {
+      enqueueSnackbar(errorDel?.data?.message, {
+        variant: 'error',
+      });
+    }
+  }, [errorDel]); */
 
   const handleSubmit = async (values) => {
     if (isEditing) {
