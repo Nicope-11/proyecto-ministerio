@@ -8,7 +8,6 @@ import ProfilePage from './pages/Private/ProfilePage';
 import HomePage from './pages/Private/HomePage';
 import ComputerPage from './pages/Private/Computer/ComputerPage.jsx';
 import MonitorPage from './pages/Private//Monitors/MonitorPage.jsx';
-import PrinterPage from './pages/Private/Printers/PrinterPage';
 import PeripheralPage from './pages/Private/PeripheralPage';
 import NetworkPage from './pages/Private/NetWorkPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -19,8 +18,10 @@ import { ColorModeContext, tokens, useMode } from './theme';
 import { PrivateRoutes, PublicRoutes } from './models/routes.js';
 import { Suspense } from 'react';
 import { ConfirmProvider } from 'material-ui-confirm';
-import FormPage from './pages/Private/Printers/FormPage.jsx';
 import { ModalProvider } from './context/ModalContext.jsx';
+import Prefetch from './features/Auth/Prefetch.jsx';
+import PagePrinter from './features/printer/PagePrinter.jsx';
+import FormPrinter from './features/printer/FormPrinter.jsx';
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -74,9 +75,9 @@ function App() {
                       element={<ComputerPage />}
                     />
                     <Route path="/monitores" element={<MonitorPage />} />
-                    <Route path="/impresoras" element={<PrinterPage />}>
-                      <Route path="agregar" element={<FormPage />} />
-                      <Route path="editar/:id" element={<FormPage />} />
+                    <Route path="/impresoras" element={<PagePrinter />}>
+                      <Route path="agregar" element={<FormPrinter />} />
+                      <Route path="editar/:id" element={<FormPrinter />} />
                     </Route>
                     <Route path="/perifericos" element={<PeripheralPage />} />
                     <Route path="/redes" element={<NetworkPage />} />
@@ -86,10 +87,13 @@ function App() {
                 </Routes>
                 {background && (
                   <Routes>
-                    <Route path="impresoras/agregar" element={<FormPage />} />
+                    <Route
+                      path="impresoras/agregar"
+                      element={<FormPrinter />}
+                    />
                     <Route
                       path="impresoras/editar/:id"
-                      element={<FormPage />}
+                      element={<FormPrinter />}
                     />
                   </Routes>
                 )}

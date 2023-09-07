@@ -1,8 +1,8 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, useTheme } from '@mui/material';
-import { tokens } from '../../../theme';
+import { tokens } from '../../theme';
 
-const CustomTable = ({ data, header, apiRef, isLoading }) => {
+const TablePrinter = ({ data, header, apiRef, isLoading }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -73,4 +73,4 @@ const CustomTable = ({ data, header, apiRef, isLoading }) => {
     </Box>
   );
 };
-export default CustomTable;
+export default TablePrinter;

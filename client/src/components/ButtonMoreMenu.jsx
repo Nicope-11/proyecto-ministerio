@@ -1,23 +1,20 @@
 import { IconButton, MenuItem } from '@mui/material';
-import { StyledMenu } from '../../../../components/StyledMenu';
 import { useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FeedIcon from '@mui/icons-material/Feed';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useDeletePrinterMutation } from '../../../../app/api/printersApiSlice';
 import { useConfirm } from 'material-ui-confirm';
 import { Link, useLocation } from 'react-router-dom';
-import { useModal } from '../../../../context/ModalContext';
+import { useModal } from '../context/ModalContext';
+import { StyledMenu } from './StyledMenu';
 
-const ButtonMoreMenu = ({ id, name }) => {
+const ButtonMoreMenu = ({ id, name, deleteAction }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const { openModal } = useModal();
   const location = useLocation();
-
-  const [deletePrinter] = useDeletePrinterMutation();
 
   const confirm = useConfirm();
 
@@ -31,14 +28,13 @@ const ButtonMoreMenu = ({ id, name }) => {
   const handleMore = () => {
     console.log(id);
   };
-  const handleEdit = () => {};
 
   const handleDelete = async () => {
     try {
       await confirm({
-        description: `El monitor ${name} se eliminará permanentemente.`,
+        description: `Los datos de ${name} se eliminará permanentemente.`,
       });
-      await deletePrinter(id);
+      await deleteAction(id);
     } catch (error) {
       console.log('Deletion cancelled.');
     }

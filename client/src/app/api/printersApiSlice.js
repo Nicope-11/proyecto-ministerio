@@ -50,7 +50,7 @@ export const printersApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: 'Printer', id: 'LIST' }],
     }),
     getMakersOptions: builder.query({
-      query: () => '/impresoras/fabricantes', // Ruta para obtener opciones de fabricantes
+      query: () => '/impresoras/fabricantes',
       providesTags: ['MakersOptions'],
     }),
     deleteMakersOptions: builder.mutation({

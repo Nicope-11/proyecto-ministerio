@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import Maker from '../models/maker.model.js';
+import Model from '../models/model.model.js';
+import Printer from '../models/printer.model.js';
 import { transformType } from '../utilities/transformType.js';
 
 export const getMakers = async (req, res) => {
@@ -45,7 +47,7 @@ export const createMaker = async (req, res) => {
 
     if (existingMaker)
       return res.status(400).json({
-        message: 'Ya existe un fabricante con el mismo nombre y tipo',
+        message: 'Ya existe un fabricante con ese nombre',
       });
 
     const newMaker = new Maker({
@@ -66,6 +68,24 @@ export const deleteMaker = async (req, res) => {
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'ID de fabricante inválido' });
+    }
+
+    const hasModels = await Model.exists({ maker: id });
+
+    if (hasModels) {
+      return res.status(400).json({
+        message:
+          'No puedes eliminar esta marca porque contiene modelos asociados',
+      });
+    }
+
+    const isUsed = await isMakerInUse(id);
+
+    if (isUsed) {
+      return res.status(400).json({
+        message:
+          'No puedes eliminar este fabricante porque está en uso en alguna categoría',
+      });
     }
 
     const maker = await Maker.findOneAndDelete({ _id: id, type });
@@ -94,7 +114,7 @@ export const updateMaker = async (req, res) => {
 
     if (existingMaker)
       return res.status(400).json({
-        message: 'Ya existe un fabricante con el mismo nombre y tipo',
+        message: 'Ya existe un fabricante con ese nombre',
       });
 
     const maker = await Maker.findOneAndUpdate(
@@ -112,3 +132,12 @@ export const updateMaker = async (req, res) => {
     return res.status(404).json({ error: error.message });
   }
 };
+
+async function isMakerInUse(id) {
+  const printerExists = await Printer.exists({ maker: id });
+  //const monitorExists = await Monitor.exists({ maker: id });
+  //const computerExists = await Computer.exists({ maker: id });
+  //const peripheralExists = await Peripheral.exists({ maker: id });
+
+  return printerExists; //|| monitorExists || computerExists || peripheralExists;
+}

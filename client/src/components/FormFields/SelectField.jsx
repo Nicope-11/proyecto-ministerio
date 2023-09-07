@@ -15,6 +15,7 @@ function SelectField(props) {
   const { value: selectedValue } = field;
   const [touched, error] = at(meta, 'touched', 'error');
   const isError = touched && error && true;
+
   function _renderHelperText() {
     if (isError) {
       return <FormHelperText>{error}</FormHelperText>;
@@ -22,12 +23,17 @@ function SelectField(props) {
   }
 
   return (
-    <FormControl {...rest} error={isError}>
+    <FormControl error={isError}>
       <InputLabel>{label}</InputLabel>
-      <Select {...field} value={selectedValue ? selectedValue : ''}>
-        {data.map((item, index) => (
-          <MenuItem key={index} value={item.value}>
-            {item.label}
+      <Select
+        {...field}
+        {...rest}
+        value={selectedValue ? selectedValue : ''}
+        label={label}
+      >
+        {data?.map((item) => (
+          <MenuItem key={item.id} value={item.id}>
+            {item.name}
           </MenuItem>
         ))}
       </Select>

@@ -1,31 +1,33 @@
 import { Box, Button, Typography, debounce, useTheme } from '@mui/material';
 
-import { tokens } from '../../../theme';
-import CustomTable from './CustomTable';
 import { useGridApiRef } from '@mui/x-data-grid';
 import { useMemo, useState } from 'react';
-import StyledSearchInput from '../../../components/StyledSearchInput';
-import ButtonMoreMenu from './Components/ButtonMoreMenu';
+
+import { Link, Outlet, useLocation } from 'react-router-dom';
+
+import { useSelector } from 'react-redux';
+import { useModal } from '../../context/ModalContext';
+import { tokens } from '../../theme';
 import {
   selectAllPrinters,
-  selectPrinterById,
+  useDeletePrinterMutation,
   useGetPrintersQuery,
-} from '../../../app/api/printersApiSlice';
-import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useModal } from '../../../context/ModalContext';
-import { useSelector } from 'react-redux';
+} from '../../app/api/printersApiSlice';
+import ButtonMoreMenu from '../../components/ButtonMoreMenu';
+import StyledSearchInput from '../../components/StyledSearchInput';
+import TablePrinter from './TablePrinter';
 
-const PrinterPage = () => {
+const PagePrinter = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { openModal } = useModal();
-  const [preloadedData, setPreloadedData] = useState({});
-
   const location = useLocation();
 
   const { data: printers, isError, isLoading } = useGetPrintersQuery();
 
   const printerData = useSelector(selectAllPrinters);
+
+  const [deletePrinter] = useDeletePrinterMutation();
 
   const columns = [
     {
@@ -66,6 +68,42 @@ const PrinterPage = () => {
       valueGetter: (params) => params.row.model.name,
     },
     {
+      field: 'createdAt',
+      headerName: 'Fecha de Creación',
+      headerAlign: 'center',
+      align: 'center',
+      flex: 2,
+      valueGetter: (params) => {
+        const createdAt = params.row.createdAt;
+
+        const formattedDate = new Date(createdAt).toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        });
+
+        return formattedDate;
+      },
+    },
+    {
+      field: 'updatedAt',
+      headerName: 'Fecha de Actualización',
+      headerAlign: 'center',
+      align: 'center',
+      flex: 2,
+      valueGetter: (params) => {
+        const updatedAt = params.row.updatedAt;
+
+        const formattedDate = new Date(updatedAt).toLocaleString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        });
+
+        return formattedDate;
+      },
+    },
+    {
       field: 'state',
       headerName: 'Estado',
       headerAlign: 'center',
@@ -102,7 +140,13 @@ const PrinterPage = () => {
       align: 'center',
       width: 40,
       renderCell: ({ row: { id, nroinventario } }) => {
-        return <ButtonMoreMenu id={id} name={nroinventario} />;
+        return (
+          <ButtonMoreMenu
+            id={id}
+            name={nroinventario}
+            deleteAction={deletePrinter}
+          />
+        );
       },
     },
   ];
@@ -200,7 +244,7 @@ const PrinterPage = () => {
           height="62vh"
           flex={15}
         >
-          <CustomTable
+          <TablePrinter
             data={printerData || []}
             header={columns}
             apiRef={apiRef}
@@ -213,4 +257,4 @@ const PrinterPage = () => {
   );
 };
 
-export default PrinterPage;
+export default PagePrinter;
